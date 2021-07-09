@@ -24,7 +24,7 @@ import { UpdateCheckService } from './modules/core/update-check.service';
 })
 export class AppComponent implements OnInit {
   appVisible = !environment.production;
-  checkedForUpdates = false;
+  checkedForUpdates = true;
 
   constructor(private router: Router, private http: HttpClient, private store: Store, private snackBar: MatSnackBar,
               private updateCheckService: UpdateCheckService) {
@@ -75,7 +75,6 @@ export class AppComponent implements OnInit {
     }
 
     if (event.data.type === 'HypnonemaNUI.ShowUI') {
-      console.log(event.data.hypnonemaVersion);
       if (!this.checkedForUpdates) {
         this.updateCheckService.check(event.data.hypnonemaVersion);
         this.checkedForUpdates = true;
