@@ -52,5 +52,5 @@ files {
 }
 
 author 'simpled-dev'
-version '1.8.0'
+version '1.9.0'
 description 'a Cinema Resource for FiveM'
