@@ -25,5 +25,7 @@
         public const string OnStopVideo = "Hypnonema.OnStopVideo";
 
         public const string OnToggleRepeat = "Hypnonema.OnToggleRepeat";
+
+        public const string OnOpen = "Hypnonema.OnOpen";
     }
 }

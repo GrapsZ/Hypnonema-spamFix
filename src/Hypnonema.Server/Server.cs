@@ -27,6 +27,8 @@
 
         public static bool EventAllowed = false;
 
+        public static string EventKey = "MyKey";
+
         private string cmdName = "hypnonema";
         
         private bool isCommandRestricted = true;
@@ -55,7 +57,13 @@
 
         private bool IsPlayerAllowed(Player player)
         {
-            return !this.isCommandRestricted || API.IsPlayerAceAllowed(player.Handle, $"command.{this.cmdName}") || EventAllowed;
+            if (EventAllowed)
+            {
+                return EventAllowed;
+            } else
+            {
+                return !this.isCommandRestricted || API.IsPlayerAceAllowed(player.Handle, $"command.{this.cmdName}");
+            }
         }
 
         /// <summary>
@@ -265,6 +273,8 @@
             // If true, you can open Hypnonema with a simple TriggerEvent
             EventAllowed = ConfigReader.GetConfigKeyValue(resourceName, "hypnonema_event_allowed", 0, EventAllowed);
 
+            EventKey = ConfigReader.GetConfigKeyValue(resourceName, "hypnonema_event_key", 0, EventKey);
+
             try
             {
                 this.database = new LiteDatabase(this.connectionString);
@@ -346,23 +356,27 @@
             if (this.IsPlayerAllowed(p)) TriggerClientEvent(ClientEvents.ToggleRepeat, screenName);
         }
 
-        [EventHandler("Hypnonema.OnOpen")]
-        private void OnOpen([FromSource] Player p)
+        [EventHandler(ServerEvents.OnOpen)]
+        private void OnOpen([FromSource] Player p, string key)
         {
+            if (key != EventKey)
+            {
+                Logger.WriteLine($"Bad key !", Logger.LogLevel.Information);
+                return;
+            }
+
             List<Screen> screens;
 
             try
             {
                 screens = this.screenCollection.FindAll().ToList();
+                Logger.WriteLine($"SCREENS OK !", Logger.LogLevel.Information);
             }
             catch (Exception e)
             {
-                if (IsDebugMode)
-                {
-                    this.AddChatMessage(p, "Failed to read database. See server-log for more info");
-                    Logger.WriteLine($"Failed to read database. Error: {e.Message}", Logger.LogLevel.Error);
-                }
-                
+                this.AddChatMessage(p, "Failed to read database. See server-log for more info");
+                Logger.WriteLine($"Failed to read database. Error: {e.Message}", Logger.LogLevel.Error);
+
                 throw;
             }
 
